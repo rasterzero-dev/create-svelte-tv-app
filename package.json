@@ -1,0 +1,25 @@
+{
+  "name": "create-svelte-tv-app",
+  "version": "0.0.2",
+  "description": "Easiest way to create a Svelte TV application ✨",
+  "type": "module",
+  "bin": {
+    "create-svelte-tv-app": "./bin/create.js"
+  },
+  "files": [
+    "bin",
+    "template"
+  ],
+  "scripts": {
+    "test": "node ./bin/create.js --help"
+  },
+  "keywords": [
+    "svelte",
+    "svelte-tv",
+    "lightning",
+    "tv",
+    "create"
+  ],
+  "license": "MIT",
+  "packageManager": "pnpm@10.4.1"
+}
