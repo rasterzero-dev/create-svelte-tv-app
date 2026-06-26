@@ -1,0 +1,13 @@
+{
+  "id": "__APP_ID__",
+  "version": "1.0.0",
+  "type": "web",
+  "title": "__APP_TITLE__",
+  "main": "index.html",
+  "icon": "icon.png",
+  "largeIcon": "largeIcon.png",
+  "disableBackHistoryAPI": true,
+  "accessibility": {
+    "supportsAudioGuidance": true
+  }
+}

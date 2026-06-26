@@ -2,3 +2,13 @@ node_modules
 dist
 .svelte-kit
 .DS_Store
+tizen/index.html
+tizen/assets
+tizen/fonts
+tizen/Debug
+tizen/obj
+tizen/Build
+lg/assets
+lg/fonts
+lg/*.ipk
+lg/index.html

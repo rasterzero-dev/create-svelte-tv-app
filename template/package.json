@@ -4,23 +4,36 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
-    "build": "vite build",
+    "dev": "vite --host 0.0.0.0 --force",
+    "build": "vite build --sourcemap=true --emptyOutDir false",
+    "build:tizen": "vite build --config vite.config.tizen.js --base=./ --outDir tizen --emptyOutDir false",
+    "build:lg": "vite build --sourcemap=false --base=./ --outDir lg --emptyOutDir false && ares-package lg --outdir lg --no-minify",
+    "build:github": "node scripts/build-github.js",
+    "build:android": "vite build && npx cap sync android",
+    "build:android:apk": "npm run build:android && cd android && ./gradlew assembleDebug",
+    "deploy": "gh-pages -d dist -a",
     "preview": "vite preview --host 0.0.0.0",
     "check": "svelte-check --tsconfig tsconfig.json",
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@capacitor/core": "^8.2.0",
     "@lightningjs/msdf-generator": "^1.3.0",
     "@lightningjs/renderer": "^3.0.6",
+    "browserlist": "^1.0.1",
+    "proxy-polyfill": "^0.3.2",
     "svelte": "^5.56.4",
-    "svelte-tv": "latest"
+    "svelte-tv": "latest",
+    "whatwg-fetch": "^3.6.20"
   },
   "devDependencies": {
+    "@capacitor/android": "^8.2.0",
+    "@capacitor/cli": "^8.2.0",
     "@eslint/js": "^10.0.1",
     "@sveltejs/vite-plugin-svelte": "^7.1.2",
     "@tsconfig/svelte": "^5.0.8",
+    "@vitejs/plugin-legacy": "^8.1.0",
     "eslint": "^10.5.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-svelte": "^3.19.0",
@@ -30,6 +43,8 @@
     "svelte-check": "^4.7.1",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.62.0",
+    "gh-pages": "^6.3.0",
+    "terser": "^5.44.0",
     "vite": "^8.1.0"
   }
 }

@@ -32,6 +32,27 @@ function toPackageName(value) {
     .replace(/^-+|-+$/g, '');
 }
 
+function toAppTitle(value) {
+  return value
+    .trim()
+    .replace(/[-_]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function toAppId(value) {
+  const parts = toPackageName(value)
+    .split(/[^a-z0-9]+/)
+    .filter(Boolean)
+    .map((part) => (/^[a-z]/.test(part) ? part : `app${part}`));
+
+  return `com.sveltetv.${parts.join('.') || 'app'}`;
+}
+
+function toTizenPackage(value) {
+  return toPackageName(value).replace(/[^a-z0-9]/g, '') || 'sveltetv';
+}
+
 function detectPackageManager() {
   const userAgent = process.env.npm_config_user_agent ?? '';
 
@@ -39,6 +60,39 @@ function detectPackageManager() {
   if (userAgent.startsWith('yarn')) return 'yarn';
   if (userAgent.startsWith('bun')) return 'bun';
   return 'npm';
+}
+
+async function replaceTemplateValues(dir, values) {
+  const textExtensions = new Set([
+    '.gradle',
+    '.html',
+    '.java',
+    '.js',
+    '.json',
+    '.ts',
+    '.xml',
+    '.yaml',
+    '.yml',
+  ]);
+
+  for (const entry of await readdir(dir, { withFileTypes: true })) {
+    const entryPath = path.join(dir, entry.name);
+
+    if (entry.isDirectory()) {
+      await replaceTemplateValues(entryPath, values);
+      continue;
+    }
+
+    if (!textExtensions.has(path.extname(entry.name))) continue;
+
+    let contents = await readFile(entryPath, 'utf8');
+
+    for (const [key, value] of Object.entries(values)) {
+      contents = contents.replaceAll(key, value);
+    }
+
+    await writeFile(entryPath, contents);
+  }
 }
 
 function installCommand(packageManager) {
@@ -120,6 +174,9 @@ rl?.close();
 const shouldInstall = !['n', 'no'].includes(installAnswer.toLowerCase());
 const targetDir = path.resolve(process.cwd(), projectName);
 const packageName = toPackageName(projectName) || 'svelte-tv-app';
+const appTitle = toAppTitle(projectName) || 'Svelte TV App';
+const appId = toAppId(projectName);
+const tizenPackage = toTizenPackage(projectName);
 const existingFiles = await readdir(targetDir).catch(() => []);
 
 if (existingFiles.length > 0) {
@@ -134,12 +191,12 @@ await cp(templateDir, targetDir, {
   force: false,
 });
 
-const packageJsonPath = path.join(targetDir, 'package.json');
-const packageJson = await readFile(packageJsonPath, 'utf8');
-await writeFile(
-  packageJsonPath,
-  packageJson.replaceAll('__PROJECT_NAME__', packageName),
-);
+await replaceTemplateValues(targetDir, {
+  __PROJECT_NAME__: packageName,
+  __APP_TITLE__: appTitle,
+  __APP_ID__: appId,
+  __TIZEN_PACKAGE__: tizenPackage,
+});
 
 console.log('');
 console.log(`Created ${packageName} at ${targetDir}`);
