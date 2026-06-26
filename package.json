@@ -1,6 +1,6 @@
 {
   "name": "create-svelte-tv-app",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Easiest way to create a Svelte TV application ✨",
   "type": "module",
   "bin": {
